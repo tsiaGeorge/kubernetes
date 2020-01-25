@@ -1,0 +1,26 @@
+#language: generic
+#script:
+#  - docker run -e CI=true USERNAME/react-test npm test
+sudo: required
+services:
+  - docker
+
+
+before_install:
+  - docker build -t tsianspire/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run tsianspire/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t tsianspire/multi-client ./client
+  - docker build -t tsianspire/multi-nginx ./nginx
+  - docker build -t tsianspire/multi-server ./server
+  - docker build -t tsianspire/multi-worker ./worker
+  # log in to docker hub
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those images and push the to docker hub
+  - docker push tsianspire/multi-client
+  - docker push tsianspire/multi-nginx
+  - docker push tsianspire/multi-server
+  - docker push tsianspire/multi-worker
