@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: client-deployment
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       component: web
@@ -17,3 +17,4 @@ spec:
           image: tsianspire/multi-client
           ports:
             - containerPort: 3000
+
